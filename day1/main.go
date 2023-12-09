@@ -12,9 +12,9 @@ import (
 func convToDigits(line string) string {
 	digitsArr := [9]string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
 	for k := range line {
-		for dk, dv := range digitsArr {
-			re := regexp.MustCompile(dv)
-			formattedLine := re.ReplaceAllString(line[0:k+1], strconv.Itoa(dk+1)) + line[k+1:]
+		for ak, av := range digitsArr {
+			re := regexp.MustCompile(av)
+			formattedLine := re.ReplaceAllString(line[0:k+1], strconv.Itoa(ak+1)) + line[k+1:]
 			if formattedLine != line {
 				return convToDigits(formattedLine)
 			}
