@@ -21,17 +21,6 @@ func main() {
 		fmt.Println(err)
 	}
 	sum := 0
-	// 	file_data :=
-	// 		`467..114..
-	// ...*......
-	// ..35..633.
-	// ......#...
-	// 617*......
-	// .....+.58.
-	// ..592.....
-	// ......755.
-	// ...$.*....
-	// .664.598..`
 	var lines [][]rune = [][]rune{}
 	var numbers []Number
 	newNumber := true
