@@ -49,7 +49,7 @@ func main() {
 	reBalls := regexp.MustCompile(`(?m)(\d{1,2} \w{3,5})`)
 	reNums := regexp.MustCompile(`(?m)\d+`)
 	reChars := regexp.MustCompile(`(?m)[a-zA-Z]+`)
-	file_data, err := fs.ReadFile(os.DirFS("."), "input.txt")
+	file_data, err := fs.ReadFile(os.DirFS(".."), "input.txt")
 	if err != nil {
 		panic(err)
 	}

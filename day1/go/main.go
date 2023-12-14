@@ -25,7 +25,7 @@ func convToDigits(line string) string {
 
 func main() {
 	re := regexp.MustCompile(`(?m)\D`)
-	file_data, err := fs.ReadFile(os.DirFS("."), "input.txt")
+	file_data, err := fs.ReadFile(os.DirFS(".."), "input.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
