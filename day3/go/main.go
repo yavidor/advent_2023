@@ -27,7 +27,6 @@ func main() {
 	for _, line := range strings.Split(string(file_data), "\n") {
 		lines = append(lines, []rune(line))
 	}
-	lines = lines[:len(lines)-1]
 	for row, i := range lines {
 		for col, j := range i {
 			if unicode.IsDigit(j) {
