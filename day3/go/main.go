@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"unicode"
@@ -15,63 +16,77 @@ type Number struct {
 	incides [][]int
 }
 
-func main() {
-	file_data, err := fs.ReadFile(os.DirFS(".."), "input.txt")
-	if err != nil {
-		fmt.Println(err)
+func contains[T any](s []T, v T) bool {
+	for _, vS := range s {
+		if reflect.DeepEqual(vS, v) {
+			return true
+		}
 	}
-	sum := 0
-	var lines [][]rune = [][]rune{}
-	var numbers []Number
-	newNumber := true
-	for _, line := range strings.Split(string(file_data), "\n") {
-		lines = append(lines, []rune(line))
+	return false
+}
+
+func (number *Number) AddIndex(index []int) {
+	number.incides = append(number.incides, index)
+}
+func makeLines(data []string) [][]rune {
+	retLines := [][]rune{}
+	for _, line := range data {
+		retLines = append(retLines, []rune(line))
 	}
-	for row, i := range lines {
-		for col, j := range i {
-			if unicode.IsDigit(j) {
-				if newNumber {
-					numbers = append(numbers, Number{value: 0, digits: []rune{j}, incides: [][]int{{row, col}}})
-					newNumber = false
+	return retLines
+}
+func makeNumber(lines [][]rune) []Number {
+	isNewNumber := true
+	var retNumbers []Number
+	for rowIndex, row := range lines {
+		for colIndex, cell := range row {
+			if unicode.IsDigit(cell) {
+				if isNewNumber {
+					retNumbers = append(retNumbers, Number{value: 0, digits: []rune{cell}, incides: [][]int{{rowIndex, colIndex}}})
+					isNewNumber = false
 				} else {
-					numbers[len(numbers)-1].digits = append(numbers[len(numbers)-1].digits, j)
+					retNumbers[len(retNumbers)-1].digits = append(retNumbers[len(retNumbers)-1].digits, cell)
 				}
-				if row > 0 {
-					numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row - 1, col})
-					if col > 0 {
-						numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row - 1, col - 1})
+				if rowIndex > 0 {
+					retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex - 1, colIndex})
+					if colIndex > 0 {
+						retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex - 1, colIndex - 1})
 					}
-					if col < len(lines[0])-1 {
-						numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row - 1, col + 1})
-					}
-				}
-				if row < len(lines)-1 {
-					numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row + 1, col})
-					if col > 0 {
-						numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row + 1, col - 1})
-					}
-					if col < len(lines[0])-1 {
-						numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row + 1, col + 1})
+					if colIndex < len(lines[0])-1 {
+						retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex - 1, colIndex + 1})
 					}
 				}
-				if col > 0 {
-					numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row, col - 1})
+				if rowIndex < len(lines)-1 {
+					retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex + 1, colIndex})
+					if colIndex > 0 {
+						retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex + 1, colIndex - 1})
+					}
+					if colIndex < len(lines[0])-1 {
+						retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex + 1, colIndex + 1})
+					}
 				}
-				if col < len(lines[0])-1 {
-					numbers[len(numbers)-1].incides = append(numbers[len(numbers)-1].incides, []int{row, col + 1})
+				if colIndex > 0 {
+					retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex, colIndex - 1})
+				}
+				if colIndex < len(lines[0])-1 {
+					retNumbers[len(retNumbers)-1].AddIndex([]int{rowIndex, colIndex + 1})
 				}
 			} else {
-				if !newNumber {
-					numbers[len(numbers)-1].value, _ = strconv.Atoi(string(numbers[len(numbers)-1].digits))
+				if !isNewNumber {
+					retNumbers[len(retNumbers)-1].value, _ = strconv.Atoi(string(retNumbers[len(retNumbers)-1].digits))
 				}
-				newNumber = true
+				isNewNumber = true
 			}
 		}
 	}
+	return retNumbers
+}
+func partOne(numbers []Number, lines [][]rune) int {
+	sum := 0
 	for _, number := range numbers {
 		isPart := false
-		for _, rowIndex := range number.incides {
-			if !(unicode.IsDigit(lines[rowIndex[0]][rowIndex[1]]) || lines[rowIndex[0]][rowIndex[1]] == '.') {
+		for _, index := range number.incides { /* indexIndex = index of index in the list of indices, wow */
+			if !(unicode.IsDigit(lines[index[0]][index[1]]) || lines[index[0]][index[1]] == '.') {
 				isPart = true
 				break
 			}
@@ -80,5 +95,39 @@ func main() {
 			sum += number.value
 		}
 	}
-	fmt.Println(sum)
+	return sum
+}
+func partTwo(numbers []Number, lines [][]rune) int {
+	var gearRatios []int
+	sum := 0
+	for rowIndex, row := range lines {
+		for colIndex, cell := range row {
+			if cell == '*' {
+				gearParts := []Number{}
+				for _, number := range numbers {
+					if contains(number.incides, []int{rowIndex, colIndex}) {
+						gearParts = append(gearParts, number)
+					}
+				}
+				if len(gearParts) == 2 {
+					gearRatios = append(gearRatios, gearParts[0].value*gearParts[1].value)
+				}
+			}
+		}
+	}
+	for _, ratio := range gearRatios {
+		sum += ratio
+	}
+	return sum
+}
+func main() {
+	fileData, err := fs.ReadFile(os.DirFS(".."), "input.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	var lines [][]rune = makeLines(strings.Split(string(fileData), "\n"))
+	var numbers []Number = makeNumber(lines)
+
+	fmt.Println(partOne(numbers, lines))
+	fmt.Println(partTwo(numbers, lines))
 }
