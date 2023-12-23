@@ -17,17 +17,6 @@ func contains[T any](s []T, v T) bool {
 	}
 	return false
 }
-func removeIndex[T any](s []T, index int) []T {
-	return append(s[:index], s[index+1:]...)
-}
-func indexOf[T any](s []T, v T) int {
-	for i, vS := range s {
-		if reflect.DeepEqual(vS, v) {
-			return i
-		}
-	}
-	return -1
-}
 
 type Card struct {
 	winningNumbers []string
@@ -60,6 +49,7 @@ func makeLines(data []byte) [][][]string {
 	}
 	return outputLines
 }
+
 func makeCards(lines [][][]string) []Card {
 	retCards := make([]Card, len(lines))
 	for i, v := range lines {
@@ -67,6 +57,7 @@ func makeCards(lines [][][]string) []Card {
 	}
 	return retCards
 }
+
 func partOne(cards []Card) int {
 	sum := 0
 	for _, v := range cards {
