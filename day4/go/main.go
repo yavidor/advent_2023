@@ -17,6 +17,23 @@ func contains[T any](s []T, v T) bool {
 	}
 	return false
 }
+
+type Card struct {
+	winningNumbers []string
+	myNumbers      []string
+	value          int
+}
+
+func NewCard(winningNumbers, myNumbers []string) *Card {
+	card := Card{winningNumbers, myNumbers, 0}
+	for _, v := range card.myNumbers {
+		if contains(card.winningNumbers, v) {
+			card.value += 1
+		}
+	}
+	return &card
+}
+
 func makeLines(data []byte) [][][]string {
 	inputLines := strings.Split(string(data), "\n")
 	outputLines := make([][][]string, 0, len(inputLines))
@@ -32,28 +49,27 @@ func makeLines(data []byte) [][][]string {
 	}
 	return outputLines
 }
-func calcCardValue(card [][]string) int {
-	ret := 0
-	for _, v := range card[1] {
-		if contains(card[0], v) {
-			ret += 1
-		}
+func makeCards(lines [][][]string) []Card {
+	retCards := make([]Card, len(lines))
+	for i, v := range lines {
+		retCards[i] = *NewCard(v[0], v[1])
 	}
-	return ret
+	return retCards
 }
-func partOne(lines [][][]string) int {
+func partOne(cards []Card) int {
 	sum := 0
-	for _, v := range lines {
-		sum += int(math.Pow(2, float64(calcCardValue(v))-1))
+	for _, v := range cards {
+		sum += int(math.Pow(2, float64(v.value)-1))
 	}
 	return sum
 }
+
 func main() {
 	fileData, err := fs.ReadFile(os.DirFS(".."), "input.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
 	var lines [][][]string = makeLines(fileData)
-	fmt.Println(lines)
-	fmt.Println(partOne(lines))
+	var cards []Card = makeCards(lines)
+	fmt.Println(partOne(cards))
 }
