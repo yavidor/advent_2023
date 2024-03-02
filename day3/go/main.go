@@ -28,6 +28,7 @@ func contains[T any](s []T, v T) bool {
 func (number *Number) AddIndex(index []int) {
 	number.incides = append(number.incides, index)
 }
+
 func makeLines(data []string) [][]rune {
 	retLines := [][]rune{}
 	for _, line := range data {
@@ -35,6 +36,7 @@ func makeLines(data []string) [][]rune {
 	}
 	return retLines
 }
+
 func makeNumber(lines [][]rune) []Number {
 	isNewNumber := true
 	var retNumbers []Number
@@ -42,7 +44,14 @@ func makeNumber(lines [][]rune) []Number {
 		for colIndex, cell := range row {
 			if unicode.IsDigit(cell) {
 				if isNewNumber {
-					retNumbers = append(retNumbers, Number{value: 0, digits: []rune{cell}, incides: [][]int{{rowIndex, colIndex}}})
+					retNumbers = append(
+						retNumbers,
+						Number{
+							value:   0,
+							digits:  []rune{cell},
+							incides: [][]int{{rowIndex, colIndex}},
+						},
+					)
 					isNewNumber = false
 				} else {
 					retNumbers[len(retNumbers)-1].digits = append(retNumbers[len(retNumbers)-1].digits, cell)
@@ -81,6 +90,7 @@ func makeNumber(lines [][]rune) []Number {
 	}
 	return retNumbers
 }
+
 func partOne(numbers []Number, lines [][]rune) int {
 	sum := 0
 	for _, number := range numbers {
@@ -97,6 +107,7 @@ func partOne(numbers []Number, lines [][]rune) int {
 	}
 	return sum
 }
+
 func partTwo(numbers []Number, lines [][]rune) int {
 	var gearRatios []int
 	sum := 0
@@ -120,6 +131,7 @@ func partTwo(numbers []Number, lines [][]rune) int {
 	}
 	return sum
 }
+
 func main() {
 	fileData, err := fs.ReadFile(os.DirFS(".."), "input.txt")
 	if err != nil {
