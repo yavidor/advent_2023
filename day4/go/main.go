@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+type Card struct {
+	winningNumbers []string
+	myNumbers      []string
+	value          int
+}
+
 func contains[T any](s []T, v T) bool {
 	for _, vS := range s {
 		if reflect.DeepEqual(vS, v) {
@@ -16,12 +22,6 @@ func contains[T any](s []T, v T) bool {
 		}
 	}
 	return false
-}
-
-type Card struct {
-	winningNumbers []string
-	myNumbers      []string
-	value          int
 }
 
 func NewCard(winningNumbers, myNumbers []string) *Card {
